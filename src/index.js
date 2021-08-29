@@ -22,7 +22,9 @@ const imageApiService = new ImageApiService();
 const autoSubmit = (e) => {
 
     e.preventDefault();
-
+    if (refs.gallery) {
+    refs.gallery.innerHTML = '';
+  }
     imageApiService.resetPage();
     fetchCards();
     loadMoreBtn.show()
