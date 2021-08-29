@@ -20,11 +20,13 @@ const loadMoreBtn = new LoadMoreBtn({
 const imageApiService = new ImageApiService();
 
 const autoSubmit = (e) => {
+
     e.preventDefault();
 
     imageApiService.resetPage();
     fetchCards();
     loadMoreBtn.show()
+
 
 };
 
@@ -32,15 +34,15 @@ const autoSubmit = (e) => {
 function fetchCards() {
      imageApiService.fetchImage(refs.input.value).then(cards => {
          createItem(cards)
-     }).then((hits) => {
-    
+     }).then(() => {
+
          if (imageApiService.page > 2) {
                refs.gallery.lastElementChild.scrollIntoView({
             block: "start",
             behavior: "smooth"
         });
          }
-        
+            
     })
 };
 
