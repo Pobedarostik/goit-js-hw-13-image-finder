@@ -1,44 +1,52 @@
 import './sass/main.scss';
 import ImageApiService from '../apiService';
-import asd from '../asd.hbs';
-import debounce from 'lodash.debounce';;
+import imgList from '../imgList.hbs';
+import LoadMoreBtn from '../loadMoreBtn.js';
+
+
 const refs = {
     form: document.querySelector('#search-form'),
-    input: document.querySelector('#input'),
-    button: document.querySelector('#button'),
+    input: document.querySelector('.search-form__input'),
+    buttonSearch: document.querySelector('.searchButton'),
     gallery: document.querySelector('.gallery'),
+    buttonLodMore: document.querySelector('.button'),
 }
+
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '[data-action="load-more"]',
+  hidden: true,
+});
 
 const imageApiService = new ImageApiService();
 
 const autoSubmit = (e) => {
-    // imageApiService(refs.input.value)
-    //     .then(total => createItem(total.hits))
-    //     .catch(err => console.log(err))
-    return imageApiService.fetchImage(refs.input.value).then(cards => {
-        createItem(cards);
-    })
-    // }
-    // fetchProm.page = refs.input.value;
-    // fetchProm.fetcArticles().then(hits => {
-    // const markup = asd(hits);
-    //     createItem(markup);
+    e.preventDefault();
+
+    imageApiService.resetPage();
+    fetchCards();
+    loadMoreBtn.show()
 
 };
 
 
+function fetchCards() {
+     imageApiService.fetchImage(refs.input.value).then(cards => {
+         createItem(cards)
+     }).then((hits) => {
+    
+         if (imageApiService.page > 2) {
+               refs.gallery.lastElementChild.scrollIntoView({
+            block: "start",
+            behavior: "smooth"
+        });
+         }
+        
+    })
+};
+
 function createItem(hits) {
-        const markup = asd(hits);
-    refs.gallery.insertAdjacentHTML('beforeend', markup);
+    refs.gallery.insertAdjacentHTML('beforeend', imgList(hits))
     
 }
-
-
-refs.input.addEventListener('input', debounce(autoSubmit, 2000))
-refs.button.addEventListener('click', autoSubmit)
-
-// const element = document.getElementById('.my-element-selector');
-// element.scrollIntoView({
-//   behavior: 'smooth',
-//   block: 'end',
-// });
+refs.form.addEventListener('submit', autoSubmit);
+refs.buttonLodMore.addEventListener('click', fetchCards);
